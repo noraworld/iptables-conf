@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# Usage:
+#   $PROG_NAME reject /etc/dnsmasq.toggle/youtube.conf
+#   $PROG_NAME delete /etc/dnsmasq.toggle/youtube.conf
+
+set -eu
+
+if [ -f "$2" ]; then
+  block_list=$(grep -E "^address=/(.*)/" "$2" | sed -r 's/address=\/(.*)\//\1/' | sed -r 's/\//\n/g')
+  chain_name_upcase=$(basename "$2" | cut -f 1 -d '.' | tr '[:lower:]' '[:upper:]')
+fi
+
+
+reject() {
+  if ! sudo iptables -L "$chain_name_upcase" 1> /dev/null 2> /dev/null; then
+    sudo iptables -w -N "$chain_name_upcase"
+    sudo iptables -w -A "$chain_name_upcase" -j REJECT
+  fi
+
+  if [ "$(sudo iptables -L OUTPUT | grep -c "^$chain_name_upcase\s")" -lt "$(echo "$block_list" | wc -l)" ]; then
+    echo "$block_list" | xargs -I {} sudo iptables -w -I OUTPUT  -p all -m string --string "{}" --algo kmp -j "$chain_name_upcase"
+  fi
+
+  if [ "$(sudo iptables -L FORWARD | grep -c "^$chain_name_upcase\s")" -lt "$(echo "$block_list" | wc -l)" ]; then
+    echo "$block_list" | xargs -I {} sudo iptables -w -I FORWARD -p all -m string --string "{}" --algo kmp -j "$chain_name_upcase"
+  fi
+}
+
+
+delete() {
+  while [ "$(sudo iptables -L OUTPUT | grep -c "^$chain_name_upcase\s")" -ne 0 ]; do
+    sudo iptables -D OUTPUT "$(sudo iptables -L OUTPUT --line-numbers | grep -m1 "$chain_name_upcase\s" | awk '{ print $1 }')"
+  done
+
+  while [ "$(sudo iptables -L FORWARD | grep -c "^$chain_name_upcase\s")" -ne 0 ]; do
+    sudo iptables -D FORWARD "$(sudo iptables -L FORWARD --line-numbers | grep -m1 "$chain_name_upcase\s" | awk '{ print $1 }')"
+  done
+}
+
+
+list() {
+  output_list=$(sudo iptables -L OUTPUT --line-numbers)
+  forward_list=$(sudo iptables -L FORWARD --line-numbers)
+
+  if [ "$2" = "all" ]; then
+    echo "$output_list"
+    echo
+    echo "$forward_list"
+  else
+    if [ "$(echo "$output_list" | grep -c "$chain_name_upcase")" -gt 0 ]; then
+      echo "$output_list" | head -2
+      echo "$output_list" | grep "$chain_name_upcase"
+    fi
+
+    if [ "$(echo "$forward_list" | grep -c "$chain_name_upcase")" -gt 0 ]; then
+      # just for format
+      if [ "$(echo "$output_list" | grep -c "$chain_name_upcase")" -gt 0 ]; then
+        echo
+      fi
+
+      echo "$forward_list" | head -2
+      echo "$forward_list" | grep "$chain_name_upcase"
+    fi
+  fi
+}
+
+
+validate() {
+  if [ ! -f "$2" ] && [ "$2" != "all" ]; then
+    echo "No such file: $2" >&2
+    exit 1
+  fi
+}
+
+
+main() {
+  validate "$@"
+
+  case "$1" in
+    "reject")
+      reject "$@"
+      ;;
+    "delete")
+      delete "$@"
+      ;;
+    "list")
+      list "$@"
+      ;;
+    *)
+      echo "Invalid command" >&2
+      ;;
+  esac
+}
+
+main "$@"
