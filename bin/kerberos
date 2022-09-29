@@ -72,6 +72,7 @@ list() {
 
 hex_string_domain() {
   domain_fragments=$(echo "$1" | sed -r "s/\./\n/g")
+  # https://stackoverflow.com/a/33256019/13999144
   lengths=$(echo "$domain_fragments" | awk '{ print length }' | xargs -I {} printf "|%02d|\n" "{}")
 
   # https://unix.stackexchange.com/a/639752
