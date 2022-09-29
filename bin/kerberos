@@ -19,11 +19,15 @@ reject() {
   fi
 
   if [ "$(sudo iptables -L OUTPUT | grep -c "^$chain_name_upcase\s")" -lt "$(echo "$block_list" | wc -l)" ]; then
-    echo "$block_list" | xargs -I {} sudo iptables -w -I OUTPUT  -p all -m string --string "{}" --algo kmp -j "$chain_name_upcase"
+    echo "$block_list" | while read -r line; do
+      sudo iptables -w -I OUTPUT -p all -m comment --comment "$line" -m string --hex-string "$(hex_string_domain "$line")" --algo bm -j "$chain_name_upcase"
+    done
   fi
 
   if [ "$(sudo iptables -L FORWARD | grep -c "^$chain_name_upcase\s")" -lt "$(echo "$block_list" | wc -l)" ]; then
-    echo "$block_list" | xargs -I {} sudo iptables -w -I FORWARD -p all -m string --string "{}" --algo kmp -j "$chain_name_upcase"
+    echo "$block_list" | while read -r line; do
+      sudo iptables -w -I FORWARD -p all -m comment --comment "$line" -m string --hex-string "$(hex_string_domain "$line")" --algo bm -j "$chain_name_upcase"
+    done
   fi
 }
 
@@ -63,6 +67,22 @@ list() {
       echo "$forward_list" | grep "$chain_name_upcase"
     fi
   fi
+}
+
+
+hex_string_domain() {
+  domain_fragments=$(echo "$1" | sed -r "s/\./\n/g")
+  lengths=$(echo "$domain_fragments" | awk '{ print length }' | xargs -I {} printf "|%02d|\n" "{}")
+
+  # https://unix.stackexchange.com/a/639752
+zebra=$(paste -d "\n" /dev/fd/3 3<<-EOF /dev/fd/4 4<<-EOF
+$(echo "$lengths")
+EOF
+$(echo "$domain_fragments")
+EOF
+)
+
+  echo "$zebra" | sed -z 's/\n//g' | sed 's/^.\{4\}//'; echo
 }
 
 
