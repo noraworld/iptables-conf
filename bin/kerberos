@@ -229,8 +229,16 @@ main() {
   eval "set -- $REST"
 
   case "$1" in
-    "reject")
-      reject "$@"
+    "apply")
+      apply "$@"
+      ;;
+    "convert")
+      if [ "$DRY_RUN" ]; then
+        convert "$@"
+      else
+        # https://unix.stackexchange.com/a/448223
+        convert "$@" | sed -r 's/^/sudo iptables /g' | awk '{ system($0) }'
+      fi
       ;;
     "delete")
       delete "$@"
