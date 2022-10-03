@@ -16,4 +16,5 @@ kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/blist/supe
 kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/deregulated_superman.conf > $IPTABLES_PATH/private/toggle/231_deregulated_superman.conf
 kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/english.conf              > $IPTABLES_PATH/private/toggle/232_english.conf
 kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/superman.conf             > $IPTABLES_PATH/private/toggle/233_superman.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/ometeotl.conf             > $IPTABLES_PATH/private/toggle/234_ometeotl.conf
 kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/wlist/not_superman.conf          > $IPTABLES_PATH/private/wlist/241_not_superman.conf
