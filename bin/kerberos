@@ -77,9 +77,9 @@ hex_string_domain() {
 
   # https://unix.stackexchange.com/a/639752
 zebra=$(paste -d "\n" /dev/fd/3 3<<-EOF /dev/fd/4 4<<-EOF
-$(echo "$lengths")
+$lengths
 EOF
-$(echo "$domain_fragments")
+$domain_fragments
 EOF
 )
 
