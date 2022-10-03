@@ -14,6 +14,7 @@ apply() {
     if [ -f "$2" ]; then
       cat "$2"
     else
+      # https://stackoverflow.com/a/11415326/13999144
       find -L "$2" -not -path '*/\.*' -type f | awk -F / '{ print $NF, $0 }' | sort | sed 's/.* //' | xargs cat
     fi
   else
@@ -22,6 +23,7 @@ apply() {
       # shellcheck disable=SC2024
       sudo iptables-restore < "$2"
     else
+      # https://stackoverflow.com/a/11415326/13999144
       find -L "$2" -not -path '*/\.*' -type f | awk -F / '{ print $NF, $0 }' | sort | sed 's/.* //' | xargs cat | sudo iptables-restore
     fi
   fi
