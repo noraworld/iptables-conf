@@ -30,6 +30,9 @@ reject() {
 
 
 delete() {
+  echo "WIP"
+  return
+
   while [ "$(sudo iptables -L OUTPUT | grep -c "^$chain_name_upcase\s")" -ne 0 ]; do
     sudo iptables -D OUTPUT "$(sudo iptables -L OUTPUT --line-numbers | grep -m1 "$chain_name_upcase\s" | awk '{ print $1 }')"
   done
