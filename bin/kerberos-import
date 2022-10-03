@@ -1,0 +1,19 @@
+#!/bin/sh
+
+echo "This could take a lot of time."
+
+DNSMASQ_PATH="/home/ubuntu/workspace/dnsmasq-conf/dnsmasq"
+IPTABLES_PATH="/home/ubuntu/workspace/iptables-conf/iptables"
+
+# Do not specify "OUTPUT" for the chain option because your host will not be able to resolve those domains, which causes Dnsmasq to fail.
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.toggle/amazon.conf                    > $IPTABLES_PATH/toggle/131_amazon.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.toggle/netflix.conf                   > $IPTABLES_PATH/toggle/132_netflix.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.toggle/vod.conf                       > $IPTABLES_PATH/toggle/133_vod.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.toggle/youtube.conf                   > $IPTABLES_PATH/toggle/134_youtube.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.toggle/youtube_music.conf             > $IPTABLES_PATH/toggle/135_youtube_music.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.wlist/not_distractor.conf             > $IPTABLES_PATH/wlist/141_not_distractor.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/blist/superman_shop.conf         > $IPTABLES_PATH/private/blist/211_superman_shop.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/deregulated_superman.conf > $IPTABLES_PATH/private/toggle/231_deregulated_superman.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/english.conf              > $IPTABLES_PATH/private/toggle/232_english.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/toggle/superman.conf             > $IPTABLES_PATH/private/toggle/233_superman.conf
+kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.priv/wlist/not_superman.conf          > $IPTABLES_PATH/private/wlist/241_not_superman.conf
