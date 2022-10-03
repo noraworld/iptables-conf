@@ -2,8 +2,9 @@
 # shellcheck disable=SC2004
 
 # Usage:
-#   $PROG_NAME reject /etc/dnsmasq.toggle/youtube.conf
-#   $PROG_NAME delete /etc/dnsmasq.toggle/youtube.conf
+#   $PROG_NAME convert /etc/dnsmasq.toggle/youtube.conf
+#   $PROG_NAME delete  /etc/dnsmasq.toggle/youtube.conf
+#   $PROG_NAME apply   /etc/iptables-conf
 
 set -eu
 
