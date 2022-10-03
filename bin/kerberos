@@ -8,6 +8,21 @@
 set -eu
 
 
+apply() {
+  if [ "$DRY_RUN" ]; then
+    if [ -f "$2" ]; then
+      cat "$2"
+    else
+      find -L "$2" -not -path '*/\.*' -type f | awk -F / '{ print $NF, $0 }' | sort | sed 's/.* //' | xargs cat
+    fi
+  else
+    if [ -f "$2" ]; then
+      # ShellCheck tells a lie
+      # shellcheck disable=SC2024
+      sudo iptables-restore < "$2"
+    else
+      find -L "$2" -not -path '*/\.*' -type f | awk -F / '{ print $NF, $0 }' | sort | sed 's/.* //' | xargs cat | sudo iptables-restore
+    fi
   fi
 }
 
