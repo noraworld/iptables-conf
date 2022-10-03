@@ -8,22 +8,38 @@
 set -eu
 
 
-
-reject() {
-  if ! sudo iptables -L "$chain_name_upcase" 1> /dev/null 2> /dev/null; then
-    sudo iptables -w -N "$chain_name_upcase"
-    sudo iptables -w -A "$chain_name_upcase" -j REJECT
   fi
+}
 
-  if [ "$(sudo iptables -L OUTPUT | grep -c "^$chain_name_upcase\s")" -lt "$(echo "$block_list" | wc -l)" ]; then
+
+convert() {
+  chain_name_upcase=$(chain_name_upcase "$@")
+  block_list=$(block_list "$@")
+  white_list=$(white_list "$@")
+
+  if [ "$block_list" != "" ]; then
+    echo "-N ${chain_name_upcase}_REJECT"
+    echo "-A ${chain_name_upcase}_REJECT -j REJECT"
+
     echo "$block_list" | while read -r line; do
-      sudo iptables -w -I OUTPUT -p all -m comment --comment "$line" -m string --hex-string "$(hex_string_domain "$line")" --algo bm -j "$chain_name_upcase"
+      if [ "$line" = "#" ]; then
+        echo "# WIP: I have no clue how to reject all packets but some other ones."
+      else
+        echo "$CHAIN" | tr ',' "\n" | xargs -I {} echo "-I {} -p all -m comment --comment \"$line\" -m string --hex-string \"$(hex_string_domain "$line")\" --algo bm -j ${chain_name_upcase}_REJECT"
+      fi
     done
   fi
 
-  if [ "$(sudo iptables -L FORWARD | grep -c "^$chain_name_upcase\s")" -lt "$(echo "$block_list" | wc -l)" ]; then
-    echo "$block_list" | while read -r line; do
-      sudo iptables -w -I FORWARD -p all -m comment --comment "$line" -m string --hex-string "$(hex_string_domain "$line")" --algo bm -j "$chain_name_upcase"
+  if [ "$white_list" != "" ]; then
+    echo "-N ${chain_name_upcase}_ACCEPT"
+    echo "-A ${chain_name_upcase}_ACCEPT -j ACCEPT"
+
+    echo "$white_list" | while read -r line; do
+      if [ "$line" = "#" ]; then
+        echo "# WIP: I have no clue how to reject all packets but some other ones."
+      else
+        echo "$CHAIN" | tr ',' "\n" | xargs -I {} echo "-I {} -p all -m comment --comment \"$line\" -m string --hex-string \"$(hex_string_domain "$line")\" --algo bm -j ${chain_name_upcase}_ACCEPT"
+      fi
     done
   fi
 }
