@@ -12,10 +12,10 @@ set -eu
 apply() {
   if [ "$DRY_RUN" ]; then
     if [ -f "$2" ]; then
-      cat "$2"
+      cat -n "$2"
     else
       # https://stackoverflow.com/a/11415326/13999144
-      find -L "$2" -not -path '*/\.*' -type f | awk -F / '{ print $NF, $0 }' | sort | sed 's/.* //' | xargs cat
+      find -L "$2" -not -path '*/\.*' -type f | awk -F / '{ print $NF, $0 }' | sort | sed 's/.* //' | xargs cat -n
     fi
   else
     if [ -f "$2" ]; then
