@@ -76,7 +76,10 @@ kerberos convert --dry-run --chain=FORWARD /etc/dnsmasq.toggle/netflix.conf > /p
 You can also use `kerberos-import` to import all Dnsmasq configurations at once.
 
 ### Delete
-WIP
+```shell
+# WIP
+kerberos delete /etc/dnsmasq.toggle/netflix.conf
+```
 
 ### List
 ```shell
