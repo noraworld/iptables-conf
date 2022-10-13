@@ -1,5 +1,7 @@
 # iptables-conf
 
+
+
 ## Setup
 ```shell
 cd iptables-conf
@@ -14,6 +16,8 @@ sudo ln -s $PWD/iptables/private/blist /etc/iptables-conf/private
 sudo ln -s $PWD/iptables/private/wlist /etc/iptables-conf/private
 ```
 
+
+
 ## Usage
 Kerberos is a converter from Dnsmasq configuration to iptables.
 
@@ -21,7 +25,9 @@ Kerberos is a converter from Dnsmasq configuration to iptables.
 ```shell
 # Check if your configuration is correct
 kerberos apply /etc/iptables-conf --dry-run
+```
 
+```shell
 # Apply
 kerberos apply /etc/iptables-conf
 ```
@@ -30,6 +36,8 @@ kerberos apply /etc/iptables-conf
 ```shell
 kerberos convert --dry-run --chain=FORWARD /etc/dnsmasq.toggle/netflix.conf
 ```
+
+The content of `/etc/dnsmasq.toggle/netflix.conf` is the same as [dnsmasq-conf/dnsmasq/dnsmasq.toggle/netflix.conf](https://github.com/noraworld/dnsmasq-conf/blob/b8262f86d4076027915550760bb829d21ba69816/dnsmasq/dnsmasq.toggle/netflix.conf).
 
 ```conf
 -N NETFLIX_REJECT
@@ -59,8 +67,10 @@ kerberos convert --dry-run --chain=FORWARD /etc/dnsmasq.toggle/netflix.conf
 -I FORWARD -p all -m comment --comment "nflxvideo.net" -m string --hex-string "nflxvideo|03|net" --algo bm -j NETFLIX_REJECT
 ```
 
+You can use the feature in a way like this:
+
 ```shell
-kerberos convert --dry-run --chain=FORWARD $DNSMASQ_PATH/dnsmasq.toggle/netflix.conf > $IPTABLES_PATH/toggle/132_netflix.conf
+kerberos convert --dry-run --chain=FORWARD /etc/dnsmasq.toggle/netflix.conf > /path/to/iptables-conf/toggle/132_netflix.conf
 ```
 
 You can also use `kerberos-import` to import all Dnsmasq configurations at once.
