@@ -3,6 +3,8 @@ A set of configurations for iptables.
 
 ⛔️ **IMPORTANT NOTICE**: iptables has currently been substituted for UFW on my computer, which means this repository is no longer supported frequently.
 
+The repository of UFW configurations is [here](https://github.com/noraworld/ufw-conf).
+
 
 
 ## Setup
