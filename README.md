@@ -1,4 +1,5 @@
 # iptables-conf
+⛔️ **IMPORTANT NOTES**: iptables has currently been substituted for UFW on my computer, which means this repository is no longer supported frequently.
 
 
 
